@@ -6,7 +6,7 @@ import GameBoard from '@/components/sliydle/GameBoard';
 import Keyboard from '@/components/sliydle/Keyboard';
 import WinModal from '@/components/sliydle/WinModal';
 import LoseModal from '@/components/sliydle/LoseModal';
-import { getTodaysWord, isValidWord, getTodayKey } from '@/components/sliydle/wordList';
+import { getTodaysWord, isValidWord /*, getTodayKey */ } from '@/components/sliydle/wordList';
 import { format } from 'date-fns';
 
 const MAX_GUESSES = 6;
@@ -28,58 +28,69 @@ export default function Sliydle() {
   const [showHelp, setShowHelp] = useState(false);
   const [shake, setShake] = useState(false);
   const [showInvalidMessage, setShowInvalidMessage] = useState(false);
-  const [hasPlayedToday, setHasPlayedToday] = useState(false);
+  // const [hasPlayedToday, setHasPlayedToday] = useState(false);
 
   // Initialize game
   useEffect(() => {
     const word = getTodaysWord();
     setTargetWord(word);
 
-    // Check if already played today
-    const todayKey = getTodayKey();
-    const savedGame = localStorage.getItem(`sliydle-${todayKey}`);
-    
-    if (savedGame) {
-      const { guesses: savedGuesses, gameState: savedState } = JSON.parse(savedGame);
-      setGuesses(savedGuesses);
-      setGameState(savedState);
-      setHasPlayedToday(savedState !== 'playing');
-      
-      // Rebuild letter statuses
-      const statuses = {};
-      savedGuesses.forEach(guess => {
-        guess.split('').forEach((letter, index) => {
-          const lowerLetter = letter.toLowerCase();
-          if (word[index] === letter) {
-            statuses[lowerLetter] = 'correct';
-          } else if (word.includes(letter) && statuses[lowerLetter] !== 'correct') {
-            statuses[lowerLetter] = 'present';
-          } else if (!statuses[lowerLetter]) {
-            statuses[lowerLetter] = 'absent';
-          }
-        });
-      });
-      setLetterStatuses(statuses);
-    } else {
-      // First time playing today - fire GAME_START
-      sendEvent("GAME_START");
-    }
+    // --- LOCALSTORAGE PERSISTENCE DISABLED (arcade build) ---
+    // The original Base44 export saves/loads daily guesses + letters.
+    // We do NOT want to store guesses/letters, so this is commented out.
+    //
+    // // Check if already played today
+    // const todayKey = getTodayKey();
+    // const savedGame = localStorage.getItem(`sliydle-${todayKey}`);
+    //
+    // if (savedGame) {
+    //   const { guesses: savedGuesses, gameState: savedState } = JSON.parse(savedGame);
+    //   setGuesses(savedGuesses);
+    //   setGameState(savedState);
+    //   setHasPlayedToday(savedState !== 'playing');
+    //
+    //   // Rebuild letter statuses
+    //   const statuses = {};
+    //   savedGuesses.forEach(guess => {
+    //     guess.split('').forEach((letter, index) => {
+    //       const lowerLetter = letter.toLowerCase();
+    //       if (word[index] === letter) {
+    //         statuses[lowerLetter] = 'correct';
+    //       } else if (word.includes(letter) && statuses[lowerLetter] !== 'correct') {
+    //         statuses[lowerLetter] = 'present';
+    //       } else if (!statuses[lowerLetter]) {
+    //         statuses[lowerLetter] = 'absent';
+    //       }
+    //     });
+    //   });
+    //   setLetterStatuses(statuses);
+    // } else {
+    //   // First time playing today - fire GAME_START
+    //   sendEvent("GAME_START");
+    // }
+
+    // Always start fresh (no localStorage persistence)
+    sendEvent("GAME_START");
   }, []);
 
-  // Save game state
-  useEffect(() => {
-    if (targetWord && guesses.length > 0) {
-      const todayKey = getTodayKey();
-      localStorage.setItem(`sliydle-${todayKey}`, JSON.stringify({
-        guesses,
-        gameState
-      }));
-    }
-  }, [guesses, gameState, targetWord]);
+  // --- LOCALSTORAGE PERSISTENCE DISABLED (arcade build) ---
+  // // Save game state
+  // useEffect(() => {
+  //   if (targetWord && guesses.length > 0) {
+  //     const todayKey = getTodayKey();
+  //     localStorage.setItem(
+  //       `sliydle-${todayKey}`,
+  //       JSON.stringify({
+  //         guesses,
+  //         gameState
+  //       })
+  //     );
+  //   }
+  // }, [guesses, gameState, targetWord]);
 
   const updateLetterStatuses = useCallback((guess) => {
     const newStatuses = { ...letterStatuses };
-    
+
     guess.split('').forEach((letter, index) => {
       const lowerLetter = letter.toLowerCase();
       if (targetWord[index] === letter) {
@@ -90,13 +101,13 @@ export default function Sliydle() {
         newStatuses[lowerLetter] = 'absent';
       }
     });
-    
+
     setLetterStatuses(newStatuses);
   }, [letterStatuses, targetWord]);
 
   const submitGuess = useCallback(() => {
     if (currentGuess.length !== WORD_LENGTH) return;
-    
+
     if (!isValidWord(currentGuess)) {
       setShake(true);
       setShowInvalidMessage(true);
@@ -110,20 +121,21 @@ export default function Sliydle() {
     const newGuesses = [...guesses, currentGuess];
     setGuesses(newGuesses);
     updateLetterStatuses(currentGuess);
-    
+
     // Fire PROGRESS event with guess number
     sendEvent("PROGRESS", { guessNumber: newGuesses.length });
-    
+
     if (currentGuess === targetWord) {
       setGameState('won');
-      setHasPlayedToday(true);
+      // setHasPlayedToday(true);
+
       // Fire SLIYD_REWARD when user wins
       sendEvent("SLIYD_REWARD", { guessCount: newGuesses.length });
     } else if (newGuesses.length >= MAX_GUESSES) {
       setGameState('lost');
-      setHasPlayedToday(true);
+      // setHasPlayedToday(true);
     }
-    
+
     setCurrentGuess('');
   }, [currentGuess, guesses, targetWord, updateLetterStatuses]);
 
@@ -153,7 +165,7 @@ export default function Sliydle() {
   }, [handleKeyPress]);
 
   return (
-    <div 
+    <div
       className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 flex items-center justify-center p-4"
       style={{ fontFamily: 'Geologica, sans-serif' }}
     >
@@ -166,8 +178,8 @@ export default function Sliydle() {
       <div className="w-full max-w-md mx-auto" style={{ aspectRatio: '9/16', maxHeight: '100vh' }}>
         <div className="relative h-full bg-white/50 backdrop-blur-sm rounded-2xl shadow-xl flex flex-col p-6 overflow-hidden">
           {/* Help Button - Top Left */}
-          <Button 
-            variant="ghost" 
+          <Button
+            variant="ghost"
             size="icon"
             onClick={() => setShowHelp(true)}
             className="absolute top-4 left-4 text-slate-500 hover:text-slate-700 z-10"
@@ -177,64 +189,66 @@ export default function Sliydle() {
 
           {/* Main Game Area */}
           <main className="flex-1 flex flex-col items-center justify-between">
-        {/* Puzzle Info */}
-        <div className="text-center mb-1 relative w-full pt-2">
-          <p className="text-xs text-slate-500">{format(new Date(), 'MMMM d, yyyy')}</p>
-          <p className="text-sm font-semibold text-slate-700">Puzzle #{Math.floor((new Date() - new Date('2025-11-25')) / (1000 * 60 * 60 * 24)) + 1}</p>
+            {/* Puzzle Info */}
+            <div className="text-center mb-1 relative w-full pt-2">
+              <p className="text-xs text-slate-500">{format(new Date(), 'MMMM d, yyyy')}</p>
+              <p className="text-sm font-semibold text-slate-700">
+                Puzzle #{Math.floor((new Date() - new Date('2025-11-25')) / (1000 * 60 * 60 * 24)) + 1}
+              </p>
 
-          {/* Invalid Word Message */}
-          <AnimatePresence>
-            {showInvalidMessage && (
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                className="absolute left-0 right-0 top-full mt-2 flex justify-center z-50"
-              >
-                <p 
-                  className="text-sm font-medium text-amber-600 bg-amber-50 border border-amber-200 rounded-lg px-4 py-2 whitespace-nowrap"
-                  style={{ fontFamily: 'Geologica, sans-serif' }}
-                >
-                  Invalid Word
-                </p>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
+              {/* Invalid Word Message */}
+              <AnimatePresence>
+                {showInvalidMessage && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    className="absolute left-0 right-0 top-full mt-2 flex justify-center z-50"
+                  >
+                    <p
+                      className="text-sm font-medium text-amber-600 bg-amber-50 border border-amber-200 rounded-lg px-4 py-2 whitespace-nowrap"
+                      style={{ fontFamily: 'Geologica, sans-serif' }}
+                    >
+                      Invalid Word
+                    </p>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
 
-        {/* Game Board */}
-        <motion.div 
-          className="flex-1 flex items-center"
-          animate={shake ? { x: [-10, 10, -10, 10, 0] } : {}}
-          transition={{ duration: 0.4 }}
-        >
-          <GameBoard
-            guesses={guesses}
-            currentGuess={currentGuess}
-            targetWord={targetWord}
-            maxGuesses={MAX_GUESSES}
-          />
-        </motion.div>
+            {/* Game Board */}
+            <motion.div
+              className="flex-1 flex items-center"
+              animate={shake ? { x: [-10, 10, -10, 10, 0] } : {}}
+              transition={{ duration: 0.4 }}
+            >
+              <GameBoard
+                guesses={guesses}
+                currentGuess={currentGuess}
+                targetWord={targetWord}
+                maxGuesses={MAX_GUESSES}
+              />
+            </motion.div>
 
-        {/* Keyboard */}
-        <div className="w-full mt-6">
-          <Keyboard 
-            onKeyPress={handleKeyPress}
-            letterStatuses={letterStatuses}
-          />
-        </div>
-      </main>
+            {/* Keyboard */}
+            <div className="w-full mt-6">
+              <Keyboard
+                onKeyPress={handleKeyPress}
+                letterStatuses={letterStatuses}
+              />
+            </div>
+          </main>
         </div>
       </div>
 
       {/* Modals */}
-      <WinModal 
+      <WinModal
         isOpen={gameState === 'won'}
         guessCount={guesses.length}
         onClose={() => setGameState('finished')}
       />
-      
-      <LoseModal 
+
+      <LoseModal
         isOpen={gameState === 'lost'}
         targetWord={targetWord}
         onClose={() => setGameState('finished')}
@@ -261,15 +275,15 @@ export default function Sliydle() {
                 <X className="w-5 h-5" />
               </Button>
             </div>
-            
+
             <div className="space-y-4 text-slate-600">
               <p>Guess the <strong>SLIYDLE</strong> in 6 tries.</p>
-              
+
               <ul className="space-y-2 text-sm">
                 <li>• Each guess must be a valid 5-letter word</li>
                 <li>• The color of the tiles will change to show how close your guess was</li>
               </ul>
-              
+
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
                   <div className="w-10 h-10 bg-emerald-500 rounded-lg flex items-center justify-center text-white font-bold">W</div>
@@ -284,7 +298,7 @@ export default function Sliydle() {
                   <span className="text-sm">Letter is not in the word</span>
                 </div>
               </div>
-              
+
               <p className="text-sm font-medium text-[#0F82FF]">A new word is available each day!</p>
             </div>
           </motion.div>
