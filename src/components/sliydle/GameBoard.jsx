@@ -38,9 +38,12 @@ export default function GameBoard({ guesses, currentGuess, targetWord, maxGuesse
               transition={{ delay: colIndex * 0.15, duration: 0.5 }}
               className={`
                 w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16
+                max-[400px]:w-9 max-[400px]:h-9
                 flex items-center justify-center
                 text-xl sm:text-2xl font-bold uppercase
+                max-[400px]:text-base
                 border-2 rounded-lg
+                max-[400px]:border max-[400px]:rounded-md
                 ${getTileStyle(getLetterStatus(guess, colIndex))}
               `}
               style={{ fontFamily: 'Geologica, sans-serif' }}
@@ -61,9 +64,12 @@ export default function GameBoard({ guesses, currentGuess, targetWord, maxGuesse
               transition={{ duration: 0.1 }}
               className={`
                 w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16
+                max-[400px]:w-9 max-[400px]:h-9
                 flex items-center justify-center
                 text-xl sm:text-2xl font-bold uppercase
+                max-[400px]:text-base
                 border-2 rounded-lg
+                max-[400px]:border max-[400px]:rounded-md
                 ${currentGuess[colIndex] ? 'border-slate-500 bg-white' : 'border-slate-200 bg-slate-50'}
                 text-slate-900
               `}
@@ -83,8 +89,10 @@ export default function GameBoard({ guesses, currentGuess, targetWord, maxGuesse
               key={colIndex}
               className="
                 w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16
+                max-[400px]:w-9 max-[400px]:h-9
                 flex items-center justify-center
                 border-2 border-slate-200 rounded-lg
+                max-[400px]:border max-[400px]:rounded-md
                 bg-slate-50
               "
             />
