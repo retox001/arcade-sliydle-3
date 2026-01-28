@@ -166,7 +166,7 @@ export default function Sliydle() {
 
   return (
     <div
-      className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 flex items-center justify-center"
+      className="min-h-[100dvh] bg-gradient-to-b from-slate-50 to-slate-100 flex items-center justify-center"
       style={{ fontFamily: 'Geologica, sans-serif' }}
     >
       {/* Google Font Import */}
@@ -175,7 +175,7 @@ export default function Sliydle() {
       </style>
 
       {/* Game Container - 9:16 Aspect Ratio */}
-      <div className="w-full max-w-md mx-auto" style={{ aspectRatio: '9/16', maxHeight: '100vh' }}>
+      <div className="w-full max-w-md mx-auto" style={{ aspectRatio: '9/16', maxHeight: '100dvh' }}>
         <div className="relative h-full bg-white/50 backdrop-blur-sm rounded-2xl shadow-xl flex flex-col p-6 overflow-hidden">
           {/* Help Button - Top Left */}
           <Button
