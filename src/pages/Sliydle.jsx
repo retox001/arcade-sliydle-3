@@ -176,7 +176,7 @@ export default function Sliydle() {
 
       {/* Game Container - 9:16 Aspect Ratio */}
       <div className="w-full max-w-md mx-auto" style={{ aspectRatio: '9/16', maxHeight: '100dvh' }}>
-        <div className="relative h-full bg-white/50 backdrop-blur-sm rounded-2xl shadow-xl flex flex-col p-6 overflow-hidden">
+        <div className="relative h-full bg-white/50 backdrop-blur-sm rounded-2xl shadow-xl flex flex-col p-6 max-[400px]:p-4 overflow-hidden">
           {/* Help Button - Top Left */}
           <Button
             variant="ghost"
@@ -231,7 +231,7 @@ export default function Sliydle() {
             </motion.div>
 
             {/* Keyboard */}
-            <div className="w-full mt-6">
+            <div className="w-full mt-6 max-[400px]:mt-3">
               <Keyboard
                 onKeyPress={handleKeyPress}
                 letterStatuses={letterStatuses}
@@ -260,7 +260,7 @@ export default function Sliydle() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4 max-[400px]:p-2"
           onClick={() => setShowHelp(false)}
         >
           <motion.div
