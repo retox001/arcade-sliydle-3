@@ -175,7 +175,7 @@ export default function Sliydle() {
       </style>
 
       {/* Game Container - 9:16 Aspect Ratio */}
-      <div className="w-full max-w-md mx-auto" style={{ aspectRatio: '9/16', maxHeight: '100dvh' }}>
+      <div className="w-full mx-auto" style={{ aspectRatio: '9/16', maxHeight: '100dvh' }}>
         <div className="relative h-full bg-white/50 backdrop-blur-sm shadow-xl flex flex-col p-6 max-[400px]:p-4">
           {/* Help Button - Top Left */}
           <Button
