@@ -166,7 +166,7 @@ export default function Sliydle() {
 
   return (
     <div
-      className="min-h-[100dvh] bg-gradient-to-b from-slate-50 to-slate-100 flex items-center justify-center"
+      className="min-h-[100dvh] bg-gradient-to-b from-slate-50 to-slate-100 flex items-center justify-center rounded-2xl"
       style={{ fontFamily: 'Geologica, sans-serif' }}
     >
       {/* Google Font Import */}
