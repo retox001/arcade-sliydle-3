@@ -2,18 +2,8 @@ import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 
 export default function NavigationTracker() {
-  const location = useLocation();
-
-  useEffect(() => {
-    window.parent?.postMessage(
-      { event: "NAVIGATED", href: window.location.href },
-      "*"
-    );
-  }, [location]);
-
   return null;
 }
-
 
 // import { useEffect } from 'react';
 // import { useLocation } from 'react-router-dom';
